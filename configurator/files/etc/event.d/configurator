@@ -1,0 +1,57 @@
+# not ideal - would like to start this on started mojodb and filecache-ready
+# but our upstart doesn't support this (0.5 needed AFAIK)
+start on stopped finish
+
+# AM may crash or be stopped manually.  Need to re-register the activities
+# in this case
+# AM now starts the configurator directly though a service call
+# start on activitymanager-ready
+
+# Some activities can only be registered once first use has completed (otherwise activity
+# manager will launch apps during first use when they don't expect to be running).
+start on first-use-finished
+start on first-use-profile-created
+
+# Need to make sure that AM doesn't hang when it emits it's upstart signal
+# This is actually not safe, as it can cause upstart to eat the events.
+# The Activity Manager will call the configurator directly.
+# service
+
+# The file cache & db kinds need to be configured first
+script
+	if [ "x$UPSTART_EVENT" = "xstopped" ]; then
+		# This is the "stopped finish" event - first pass we register file cache and dbkinds
+		logger -s "Configuring dbkinds & filecache"
+		luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbkinds","filecache"]}'
+		# This has to happen *after* the kinds are created.
+		logger -s "Configuring dbpermissions"
+		luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbpermissions"]}'
+	fi
+
+	# Notify it is safe to run the activity manager if it hasn't started already
+	initctl emit datastore-initialized
+
+	# Now we configure activities doesn't matter if it hasn't started yet
+	# Rely on ls2 delivering the messages once it does
+
+	# The only time we care about the first use distiction is when we're registering 
+	# activities - behaviour is the same - just the flag is different
+	#
+	# Don't do this.  The Activity Manager will call the configurator directly
+	# to work around the upstart issue.
+
+	#POST_FIRST_USE=0
+	#if [ -f "/var/luna/preferences/ran-first-use" ] && [ -f "/var/luna/preferences/first-use-profile-created" ]; then
+	#	POST_FIRST_USE=1
+	#fi
+
+	#if [ $POST_FIRST_USE -eq 1 ]; then
+	#	logger -s "Configuring activities"
+	#	luna-send -n 1 palm://com.palm.configurator/run '{"types":["activities"]}'
+	#else
+	#	logger -s "Configuring activities prior to first-use"
+	#	luna-send -n 1 palm://com.palm.configurator/run '{"types":["activities-first-use"]}'
+	#fi
+	logger -s "Configuring activities"
+	luna-send -n 1 palm://com.palm.configurator/run '{"types":["activities"]}'
+end script
