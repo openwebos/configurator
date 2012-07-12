@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=com.palm.configurator
-Exec=/usr/bin/configurator -c {\"log\":{\"appender\":{\"type\":\"syslog\"},\"levels\":{\"configurator\":\"notice\"}}} service
-Type=dynamic
