@@ -1,5 +1,11 @@
 Configurator
 ============
+Summary
+-------
+Creates the database schema for webos Applications.
+
+Description
+-----------
 Configurator is a userspace service that creates the database schema (webOS Db8 kinds) for Applications. It scans the /etc/palm/db/kinds directory to read the App's Db8
 schema files to create the db kinds in the Db8.
 
@@ -7,18 +13,47 @@ Dependencies
 ============
 Below are the tools and libraries required to build.
 
-	gcc 4.3
-	make (any version)
-	pkg-config
-	glib-2.0 or later
-	openwebos/Db8 libraries (libmojocore, libmojoluna)
-	openwebos/luna-service2 3.0.0
+	- openwebos/cjson 1.8.0
+	- cmake 2.8.7 
+	- glib-2.0
+	- openwebos/Db8 libraries (libmojocore, libmojoluna)
+	- openwebos/luna-service2 3.0.0
+	- openwebos/cmake-modules-webos
 
+How to Build on Linux
+=====================
 
-Build Instructions
-==================
-This release is provided for informational purpose only. No build support is provided at this time.
+## Building
 
+Once you have downloaded the source, execute the following to build it (after
+changing into the directory under which it was downloaded):
+
+    $ mkdir BUILD
+    $ cd BUILD
+    $ cmake ..
+    $ make
+    $ sudo make install
+
+The directory under which the files are installed defaults to
+<tt>/usr/local/webos</tt>.
+You can install them elsewhere by supplying a value for
+<tt>WEBOS_INSTALL_ROOT</tt>
+when invoking <tt>cmake</tt>. For example:
+
+    $ cmake -D WEBOS_INSTALL_ROOT:PATH=$HOME/projects/openwebos ..
+    $ make
+    $ make install
+
+will install the files in subdirectories of <tt>$HOME/projects/openwebos</tt>.
+
+Specifying <tt>WEBOS_INSTALL_ROOT</tt> also causes <tt>pkg-config</tt> to look
+in that tree first before searching the standard locations. You can specify
+additional directories to be searched prior to this one by setting the
+the <tt>PKG_CONFIG_PATH</tt> environment variable.
+
+To see all of the make targets that CMake has generated, issue:
+
+    $ make help
 
 
 # Copyright and License Information
