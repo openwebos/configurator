@@ -24,7 +24,7 @@ include(webOS/webOS)
 webos_modules_init(1 0 0 QUALIFIER RC2)
 webos_component(2 0 0)
 
-webos_add_compiler_flags(ALL "-DMOJ_LINUX -DMOJ_X86 -DMOJ_DEBUG")
+webos_add_compiler_flags(ALL "-DMOJ_LINUX -DMOJ_X86")
 
 webos_machine_dep()
 
@@ -53,10 +53,11 @@ add_executable(configurator ${SOURCE_FILES} )
 
 target_link_libraries(configurator
                    	-L. 
-		   			${MOJODB_LDFLAGS}
+  			${MOJODB_LDFLAGS}
                    	${GLIB2_LDFLAGS}
                    	${LUNASERVICE_LDFLAGS}
                    	${CJSON_LDFLAGS}
                    )
 
 webos_build_program()
+webos_build_system_bus_files()

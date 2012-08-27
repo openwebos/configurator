@@ -1,0 +1,14 @@
+# AM may crash or be stopped manually.  Need to re-register the activities
+# in this case
+start on activitymanager-ready
+
+# Need to make sure that AM doesn't hang when it emits it's upstart signal
+# This is actually not safe, as it can cause upstart to eat the events.
+# The Activity Manager will call the configurator directly.
+service
+
+# The file cache & db kinds need to be configured first
+script
+	logger -s "Configuring activities asynchronously"
+	@WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["activities"]}'
+end script
