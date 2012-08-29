@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName":"/usr/lib/luna/configurator",
+        "type": "privileged",
+        "allowedNames": ["com.palm.configurator"]
+    },
+    "permissions": [
+        {
+            "service":"com.palm.configurator",
+            "inbound":["*"],
+            "outbound":["*"]
+        }
+    ]
+}
