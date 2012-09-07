@@ -28,6 +28,12 @@
 
 class ConfiguratorCallback;
 
+static const MojModeT kCacheDirPerms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+static const MojModeT kCacheStampPerm = S_IRWXU | S_IRGRP | S_IROTH;
+
+static const char* kCacheDir = "@WEBOS_INSTALL_LOCALSTATEDIR@/cache/";
+static const char* kConfCacheDir = "@WEBOS_INSTALL_LOCALSTATEDIR@/cache/configurator/";
+
 class Configurator : public MojSignalHandler
 {
 public:

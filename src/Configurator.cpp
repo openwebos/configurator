@@ -28,12 +28,6 @@
 
 using namespace std;
 
-static const MojModeT kCacheDirPerms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-static const MojModeT kCacheStampPerm = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-
-static const char* kCacheDir = "/var/cache/";
-static const char* kConfCacheDir = "/var/cache/configurator/";
-
 static std::string Replace(std::string input, const std::string& substr, const std::string& replacement)
 {
 	size_t i;

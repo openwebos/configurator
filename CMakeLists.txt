@@ -82,5 +82,6 @@ target_link_libraries(configurator
                    	${CJSON_LDFLAGS}
                    )
 
+webos_configure_header_files(src)
 webos_build_program()
 webos_build_system_bus_files()
