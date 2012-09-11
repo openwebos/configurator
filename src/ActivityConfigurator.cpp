@@ -107,6 +107,10 @@ ActivityConfigurator::ActivityConfigurator(const std::string& id, ConfigType con
 			m_firstUseOnly = false;
 		}
 	}
+#ifdef WEBOS_TARGET_MACHINE_STANDALONE
+	//Set the m_firstUseOnly flag to false as there is no first use run in Desktop.
+ 	m_firstUseOnly = false;
+#endif
 }
 
 ActivityConfigurator::~ActivityConfigurator()
