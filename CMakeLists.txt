@@ -83,5 +83,5 @@ target_link_libraries(configurator
                    )
 
 webos_configure_header_files(src)
-webos_build_program()
+webos_build_daemon(NAME configurator LAUNCH files/launch)
 webos_build_system_bus_files()

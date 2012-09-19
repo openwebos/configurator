@@ -1,6 +1,6 @@
 {
     "role": {
-        "exeName":"@WEBOS_INSTALL_BINDIR@/configurator",
+        "exeName":"@WEBOS_INSTALL_SBINDIR@/configurator",
         "type": "privileged",
         "allowedNames": ["com.palm.configurator"]
     },

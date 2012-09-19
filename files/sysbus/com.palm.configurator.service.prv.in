@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=com.palm.configurator
-Exec=@WEBOS_INSTALL_BINDIR@/configurator -c {\"log\":{\"appender\":{\"type\":\"syslog\"},\"levels\":{\"configurator\":\"notice\"}}} service
+Exec=@WEBOS_INSTALL_SBINDIR@/configurator -c {\"log\":{\"appender\":{\"type\":\"syslog\"},\"levels\":{\"configurator\":\"notice\"}}} service
 Type=dynamic
