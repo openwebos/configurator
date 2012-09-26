@@ -24,7 +24,7 @@ include(webOS/webOS)
 webos_modules_init(1 0 0 QUALIFIER RC2)
 webos_component(2 0 0)
 
-webos_add_compiler_flags(ALL "-DMOJ_LINUX -DMOJ_X86")
+webos_add_compiler_flags(ALL "-DMOJ_LINUX")
 
 webos_machine_dep()
 
