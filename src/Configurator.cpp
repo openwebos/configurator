@@ -404,6 +404,7 @@ void Configurator::GetConfigFiles(const string& parent, const string& directory)
 
 	DIR* dp = NULL;
 	struct dirent* dirp = NULL;
+	struct stat stat_buf;
 	MojLogInfo(m_log, "Finding config files in '%s' under '%s'", directory.c_str(), parent.c_str());
 
 	if((dp  = opendir(directory.c_str())) == NULL) {
@@ -417,20 +418,25 @@ void Configurator::GetConfigFiles(const string& parent, const string& directory)
 			string filePath = directory;
 			filePath.append("/");
 			filePath.append(filename);
-
-			if (dirp->d_type == DT_DIR) {
-				GetConfigFiles(filename, filePath);
-			} else {
-				if (! parent.empty())
-					m_parentDirMap[filePath] = parent;
-
-				// Check if the config file has already been processed
-				if (!(m_currentType == Configure && IsAlreadyConfigured(filePath))) {
-					MojLogDebug(m_log, "Found configuration '%s'", filePath.c_str());
-					m_configs.push_back(filePath);
+			if(0 == stat(filePath.c_str(), &stat_buf)) {
+				if (S_ISDIR(stat_buf.st_mode)) {
+					GetConfigFiles(filename, filePath);
 				} else {
-					MojLogDebug(m_log, "Skipping configuration '%s' because it has already run (cache stamp in %s exists)", filePath.c_str(), kConfCacheDir);
+					if (! parent.empty())
+						m_parentDirMap[filePath] = parent;
+
+					// Check if the config file has already been processed
+					if (!(m_currentType == Configure && IsAlreadyConfigured(filePath))) {
+						MojLogDebug(m_log, "Found configuration '%s'", filePath.c_str());
+						m_configs.push_back(filePath);
+					} else {
+						MojLogDebug(m_log, "Skipping configuration '%s' because it has already run (cache stamp in %s exists)", filePath.c_str(), kConfCacheDir);
+					}
 				}
+			}
+			else {
+				MojLogError(m_log, "Failed to get file information on: %s", filename.c_str());
+				break;
 			}
 		}
 	}
