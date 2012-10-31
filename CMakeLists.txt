@@ -44,39 +44,16 @@ pkg_check_modules(CJSON cjson)
 include_directories(${CJSON_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${CJSON_CFLAGS})
 
-#pkg_check_modules(MOJODB mojodb)
-#include_directories(${MOJODB_INCLUDE_DIRS})
-#webos_add_compiler_flags(ALL ${MOJODB_CFLAGS})
-
-find_library(MJCORE NAMES mojocore libmojocore)
-if(MJCORE STREQUAL "MJCORE-NOTFOUND")
-        message(FATAL_ERROR "Failed to find libmojocore. Please install openwebos/db8")
-endif()
-
-find_library(MJLUNA NAMES mojoluna libmojoluna)
-if(MJLUNA STREQUAL "MJLUNA-NOTFOUND")
-        message(FATAL_ERROR "Failed to find libmojoluna.  Please install openwebos/db8")
-endif()
-
-find_library(MJDB NAMES mojodb libmojodb)
-if(MJDB STREQUAL "MJDB-NOTFOUND")
-        message(FATAL_ERROR "Failed to find mojodb. Please install openwebos/db8")
-endif()
-
-find_path(MJ_INC NAMES mojodb/core/MojErr.h) 
-if(MJ_INC STREQUAL "MJ_INC-NOTFOUND")
-        message(FATAL_ERROR "Failed to find mojodb header. Please install openwebos/db8")
-endif()
-include_directories(${MJ_INC}/mojodb)
+pkg_check_modules(DB8 REQUIRED db8)
+include_directories(${DB8_INCLUDE_DIRS})
+webos_add_compiler_flags(ALL ${DB8_CFLAGS_OTHER})
 
 file(GLOB SOURCE_FILES src/*.cpp)
 add_executable(configurator ${SOURCE_FILES} )
 
 target_link_libraries(configurator
                    	-L. 
-  			${MJDB}
-			${MJCORE}
-			${MJLUNA}
+                    ${DB8_LDFLAGS}
                    	${GLIB2_LDFLAGS}
                    	${LUNASERVICE_LDFLAGS}
                    	${CJSON_LDFLAGS}
