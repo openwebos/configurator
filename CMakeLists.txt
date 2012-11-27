@@ -57,6 +57,7 @@ target_link_libraries(configurator
                    	${GLIB2_LDFLAGS}
                    	${LUNASERVICE_LDFLAGS}
                    	${CJSON_LDFLAGS}
+                        -pthread
                    )
 
 webos_configure_header_files(src)
