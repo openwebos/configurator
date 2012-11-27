@@ -48,6 +48,8 @@ pkg_check_modules(DB8 REQUIRED db8)
 include_directories(${DB8_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${DB8_CFLAGS_OTHER})
 
+find_library(PTHREAD pthread REQUIRED)
+
 file(GLOB SOURCE_FILES src/*.cpp)
 add_executable(configurator ${SOURCE_FILES} )
 
@@ -57,6 +59,7 @@ target_link_libraries(configurator
                    	${GLIB2_LDFLAGS}
                    	${LUNASERVICE_LDFLAGS}
                    	${CJSON_LDFLAGS}
+                        ${PTHREAD}
                    )
 
 webos_configure_header_files(src)
