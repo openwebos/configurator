@@ -16,6 +16,19 @@
 //
 // LICENSE@@@
 
+/**
+@page com_palm_configurator com.palm.configurator
+
+@brief Responsible for doing the following on behalf of applications and services:
+       1) Registering Db8 kinds and permissions
+       2) Defining file cache types
+       3) Registering persistent activities and db8 watches
+
+@{
+@}
+
+*/
+
 #include "BusClient.h"
 #include "db/MojDbServiceDefs.h"
 #include "core/MojServiceMessage.h"
@@ -105,6 +118,42 @@ static MojErr getTypes(MojObject typesArray, BusClient::ScanTypes &bitmask)
 	return MojErrNone;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 Start of API documentation comment block                //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+/**
+@page com_palm_configurator com.palm.configurator
+@{
+@section com_palm_configurator_run run
+
+This method will scan all folders and run all configuration files.
+
+@par Parameters
+
+Name | Required | Type | Description
+-----|----------|------|------------
+types | yes  | Array | List of different configuration types. Types are dbkinds, filecache, activities.
+
+@par Returns(Call)
+
+Name | Required | Type | Description
+-----|----------|------|------------
+returnValue | yes | Boolean | True
+
+@par Returns(Subscription)
+
+Not applicable.
+
+@}
+*/
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 End of API documentation comment block                  //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+
 MojErr BusClient::BusMethods::Run(MojServiceMessage* msg, MojObject& payload)
 {
 	MojLogTrace(m_log);
@@ -149,6 +198,44 @@ bool BusClient::BusMethods::WorkEnqueued(Callback callback, MojServiceMessage *m
 	return true;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 Start of API documentation comment block                //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+/**
+@page com_palm_configurator com.palm.configurator
+@{
+@section com_palm_configurator_rescan rescan
+
+Force re-run all configurations.
+
+@par Parameters
+
+Name | Required | Type | Description
+-----|----------|------|------------
+id | yes  | String | Application Id
+type | yes | String | Either 'app' or 'service'
+location | yes | String | Indicates if it is a system app or a third party app.
+
+@par Returns(Call)
+
+Name | Required | Type | Description
+-----|----------|------|------------
+returnValue | yes | Boolean | True
+
+@par Returns(Subscription)
+
+Not applicable.
+
+@}
+*/
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 End of API documentation comment block                  //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+
 MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 {
 	MojLogTrace(m_log);
@@ -158,6 +245,44 @@ MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 
 	return ScanRequest(msg, payload, BusClient::ForceRescan);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 Start of API documentation comment block                //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+/**
+@page com_palm_configurator com.palm.configurator
+@{
+@section com_palm_configurator_scan scan
+
+Run configuration in safe mode. It doesn't re-run any configurations that were run already.
+
+@par Parameters
+
+Name | Required | Type | Description
+-----|----------|------|------------
+id | yes  | String | Application Id
+type | yes | String | Either 'app' or 'service'
+location | yes | String | Indicates if it is a system app or a third party app.
+
+@par Returns(Call)
+
+Name | Required | Type | Description
+-----|----------|------|------------
+returnValue | yes | Boolean | True
+
+@par Returns(Subscription)
+
+Not applicable.
+
+@}
+*/
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 End of API documentation comment block                  //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
 
 MojErr BusClient::BusMethods::Scan(MojServiceMessage* msg, MojObject& payload)
 {
@@ -224,6 +349,44 @@ MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& pay
 
 	return MojErrNone;
 }
+
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 Start of API documentation comment block                //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+/**
+@page com_palm_configurator com.palm.configurator
+@{
+@section com_palm_configurator_unconfigure unconfigure
+
+To remove/unconfigure all files for an application.
+
+@par Parameters
+
+Name | Required | Type | Description
+-----|----------|------|------------
+id | yes  | String | Application or Service Id
+type | yes | String | Either 'app' or 'service'
+location | yes | String | Indicates if it is a system or a third party app.
+
+@par Returns(Call)
+
+Name | Required | Type | Description
+-----|----------|------|------------
+returnValue | yes | Boolean | True
+
+@par Returns(Subscription)
+
+Not applicable.
+
+@}
+*/
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+//                 End of API documentation comment block                  //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
 
 MojErr BusClient::BusMethods::Unconfigure(MojServiceMessage *msg, MojObject &payload)
 {
