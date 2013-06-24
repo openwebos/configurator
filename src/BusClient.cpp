@@ -16,6 +16,7 @@
 //
 // LICENSE@@@
 
+//->Start of API documentation comment block
 /**
 @page com_palm_configurator com.palm.configurator
 
@@ -26,6 +27,7 @@
 
 @{
 @}
+//->End of API documentation comment block
 
 */
 
@@ -118,11 +120,7 @@ static MojErr getTypes(MojObject typesArray, BusClient::ScanTypes &bitmask)
 	return MojErrNone;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 Start of API documentation comment block                //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->Start of API documentation comment block
 /**
 @page com_palm_configurator com.palm.configurator
 @{
@@ -131,28 +129,21 @@ static MojErr getTypes(MojObject typesArray, BusClient::ScanTypes &bitmask)
 This method will scan all folders and run all configuration files.
 
 @par Parameters
-
 Name | Required | Type | Description
 -----|----------|------|------------
 types | yes  | Array | List of different configuration types. Types are dbkinds, filecache, activities.
 
 @par Returns(Call)
-
 Name | Required | Type | Description
 -----|----------|------|------------
 returnValue | yes | Boolean | True
 
 @par Returns(Subscription)
-
-Not applicable.
+None
 
 @}
 */
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 End of API documentation comment block                  //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->End of API documentation comment block
 
 MojErr BusClient::BusMethods::Run(MojServiceMessage* msg, MojObject& payload)
 {
@@ -198,11 +189,8 @@ bool BusClient::BusMethods::WorkEnqueued(Callback callback, MojServiceMessage *m
 	return true;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 Start of API documentation comment block                //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+
+//->Start of API documentation comment block
 /**
 @page com_palm_configurator com.palm.configurator
 @{
@@ -211,7 +199,6 @@ bool BusClient::BusMethods::WorkEnqueued(Callback callback, MojServiceMessage *m
 Force re-run all configurations.
 
 @par Parameters
-
 Name | Required | Type | Description
 -----|----------|------|------------
 id | yes  | String | Application Id
@@ -219,22 +206,16 @@ type | yes | String | Either 'app' or 'service'
 location | yes | String | Indicates if it is a system app or a third party app.
 
 @par Returns(Call)
-
 Name | Required | Type | Description
 -----|----------|------|------------
 returnValue | yes | Boolean | True
 
 @par Returns(Subscription)
-
-Not applicable.
+None
 
 @}
 */
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 End of API documentation comment block                  //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->End of API documentation comment block
 
 MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 {
@@ -246,11 +227,7 @@ MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 	return ScanRequest(msg, payload, BusClient::ForceRescan);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 Start of API documentation comment block                //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->Start of API documentation comment block
 /**
 @page com_palm_configurator com.palm.configurator
 @{
@@ -259,7 +236,6 @@ MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 Run configuration in safe mode. It doesn't re-run any configurations that were run already.
 
 @par Parameters
-
 Name | Required | Type | Description
 -----|----------|------|------------
 id | yes  | String | Application Id
@@ -267,22 +243,16 @@ type | yes | String | Either 'app' or 'service'
 location | yes | String | Indicates if it is a system app or a third party app.
 
 @par Returns(Call)
-
 Name | Required | Type | Description
 -----|----------|------|------------
 returnValue | yes | Boolean | True
 
 @par Returns(Subscription)
-
-Not applicable.
+None
 
 @}
 */
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 End of API documentation comment block                  //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->End of API documentation comment block
 
 MojErr BusClient::BusMethods::Scan(MojServiceMessage* msg, MojObject& payload)
 {
@@ -350,11 +320,7 @@ MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& pay
 	return MojErrNone;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 Start of API documentation comment block                //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->Start of API documentation comment block
 /**
 @page com_palm_configurator com.palm.configurator
 @{
@@ -363,7 +329,6 @@ MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& pay
 To remove/unconfigure all files for an application.
 
 @par Parameters
-
 Name | Required | Type | Description
 -----|----------|------|------------
 id | yes  | String | Application or Service Id
@@ -371,22 +336,16 @@ type | yes | String | Either 'app' or 'service'
 location | yes | String | Indicates if it is a system or a third party app.
 
 @par Returns(Call)
-
 Name | Required | Type | Description
 -----|----------|------|------------
 returnValue | yes | Boolean | True
 
 @par Returns(Subscription)
-
-Not applicable.
+None
 
 @}
 */
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                 End of API documentation comment block                  //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+//->End of API documentation comment block
 
 MojErr BusClient::BusMethods::Unconfigure(MojServiceMessage *msg, MojObject &payload)
 {
