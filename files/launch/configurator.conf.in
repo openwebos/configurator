@@ -18,33 +18,16 @@
 
 description "@WEBOS_PROJECT_SUMMARY@"
 
-# AM may crash or be stopped manually.  Need to re-register the activities
-# in this case
-# AM now starts the configurator directly though a service call
-
-# Some activities can only be registered once first use has completed (otherwise activity
-# manager will launch apps during first use when they don't expect to be running).
-
-# Need to make sure that AM doesn't hang when it emits it's upstart signal
-# This is actually not safe, as it can cause upstart to eat the events.
-# The Activity Manager will call the configurator directly.
-
-start on ((started db8) and filecache-ready) or first-use-finished or first-use-profile-created
+start on started db8 and filecache-ready
 emits datastore-initialized
 
-# The file cache & db kinds need to be configured first
 script
-	if [ "x$UPSTART_EVENT" = "xstopped" ]; then
-		# This is the "stopped finish" event - first pass we register file cache and dbkinds
-		logger -s "Configuring dbkinds & filecache"
-		@WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbkinds","filecache"]}'
-		# This has to happen *after* the kinds are created.
-		logger -s "Configuring dbpermissions"
-		@WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbpermissions"]}'
-	fi
+    # first pass we register file cache and dbkinds
+    logger -s "Configuring dbkinds & filecache"
+    @WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbkinds","filecache"]}'
 
-	initctl emit datastore-initialized
-
-	logger -s "Configuring activities"
-	@WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["activities"]}'
+    # This has to happen *after* the kinds are created.
+    logger -s "Configuring dbpermissions"
+    @WEBOS_INSTALL_BINDIR@/luna-send -n 1 palm://com.palm.configurator/run '{"types":["dbpermissions"]}'
+    initctl emit --no-wait datastore-initialized
 end script
