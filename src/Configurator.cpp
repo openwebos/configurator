@@ -293,9 +293,13 @@ void Configurator::UnmarkConfigured(const std::string &confFile) const
 
 	string stamp = kConfCacheDir + Replace(confFile, "/", "_");
 	if (unlink(stamp.c_str()) == 0)
+    {
 		MojLogDebug(m_log, "removed configured stamp for '%s'", confFile.c_str());
+    }
 	else
+    {
 		MojLogWarning(m_log, "failed to remove configured stamp for '%s' ('%s')", confFile.c_str(), stamp.c_str());
+    }
 }
 
 const std::string& Configurator::ParentId(const std::string& filePath) const

@@ -48,6 +48,13 @@ pkg_check_modules(DB8 REQUIRED db8)
 include_directories(${DB8_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${DB8_CFLAGS_OTHER})
 
+if (NOT DEFINED USE_PMLOG OR USE_PMLOG)
+    # -- check for pmLogLib
+    pkg_check_modules(PMLOG REQUIRED PmLogLib>=3)
+    include_directories(${PMLOG_INCLUDE_DIRS})
+    webos_add_compiler_flags(ALL ${PMLOG_CFLAGS_OTHER} -DUSE_PMLOG)
+endif()
+
 find_library(PTHREAD pthread REQUIRED)
 
 file(GLOB SOURCE_FILES src/*.cpp)
@@ -60,6 +67,7 @@ target_link_libraries(configurator
                    	${LUNASERVICE_LDFLAGS}
                    	${CJSON_LDFLAGS}
                         ${PTHREAD}
+                    ${PMLOG_LDFLAGS}
                    )
 
 webos_configure_header_files(src)
