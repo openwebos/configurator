@@ -22,7 +22,7 @@ project(configurator CXX)
 
 include(webOS/webOS)
 webos_modules_init(1 0 0 QUALIFIER RC2)
-webos_component(2 0 0)
+webos_component(3 0 0)
 
 webos_add_compiler_flags(ALL "-DMOJ_LINUX")
 
@@ -44,7 +44,7 @@ pkg_check_modules(CJSON cjson)
 include_directories(${CJSON_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${CJSON_CFLAGS})
 
-pkg_check_modules(DB8 REQUIRED db8)
+pkg_check_modules(DB8 REQUIRED db8>=3)
 include_directories(${DB8_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${DB8_CFLAGS_OTHER})
 

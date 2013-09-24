@@ -88,7 +88,7 @@ private:
 	typedef std::tr1::unordered_map<std::string, std::string> ConfigMap;
 	void              InitCacheDir() const;
 	bool              IsAlreadyConfigured(const std::string &confFile) const;
-	void              GetConfigFiles(const std::string& parent, const std::string& directory);
+	bool              GetConfigFiles(const std::string& parent, const std::string& directory);
 	const std::string ReadFile(const std::string& filePath);
 	void              Complete();
 	MojErr            BusResponseAsync(const std::string& filePath, MojObject& response, MojErr err, bool *cacheConfigured);

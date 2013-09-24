@@ -24,6 +24,7 @@ using namespace std;
 
 static const char *MOJODB_DB_BUS_ADDRESS = "com.palm.db";
 static const char *MOJODB_TEMPDB_BUS_ADDRESS = "com.palm.tempdb";
+static const char *MOJODB_MEDIADB_BUS_ADDRESS = "com.webos.mediadb";
 static const char *MOJODB_PUTKIND_METHOD = "putKind";
 static const char *MOJODB_DELKIND_METHOD = "delKind";
 
@@ -135,6 +136,20 @@ MojErr DbKindConfigurator::ProcessConfigRemoval(const string& filePath, MojObjec
 	return m_busClient.CreateRequest(owner.c_str())->send(CreateCallback(filePath)->m_slot, ServiceName(), MOJODB_DELKIND_METHOD, delKind);
 }
 
+////////////////////////////////////////////////
+// mediaDB
+MediaDbKindConfigurator::MediaDbKindConfigurator(const std::string& id, ConfigType confType, RunType type, BusClient& busClient, MojDbClient& dbClient, string configDirectory)
+    : DbKindConfigurator(id, confType, type, busClient, dbClient, configDirectory)
+{
+}
+
+const char* MediaDbKindConfigurator::ServiceName() const
+{
+     return MOJODB_MEDIADB_BUS_ADDRESS;
+}
+
+////////////////////////////////////////////////
+// tempDB
 TempDbKindConfigurator::TempDbKindConfigurator(const std::string& id, ConfigType confType, RunType type, BusClient& busClient, MojDbClient& dbClient, string configDirectory)
 	: DbKindConfigurator(id, confType, type, busClient, dbClient, configDirectory)
 {

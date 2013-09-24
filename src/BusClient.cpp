@@ -48,6 +48,8 @@ const char* const BusClient::ROOT_BASE_DIR               = "/etc/palm/";
 const char* const BusClient::OLD_DB_KIND_DIR             = "db_kinds";	// deprecated
 const char* const BusClient::DB_KIND_DIR                 = "db/kinds";
 const char* const BusClient::DB_PERMISSIONS_DIR          = "db/permissions";
+const char* const BusClient::MEDIADB_KIND_DIR            = "mediadb/kinds";
+const char* const BusClient::MEDIADB_PERMISSIONS_DIR     = "mediadb/permissions";
 const char* const BusClient::TEMPDB_KIND_DIR             = "tempdb/kinds";
 const char* const BusClient::TEMPDB_PERMISSIONS_DIR      = "tempdb/permissions";
 const char* const BusClient::FILE_CACHE_CONFIG_DIR       = "filecache_types";
@@ -421,6 +423,7 @@ MojErr BusClient::BusMethods::Unconfigure(MojServiceMessage *msg, MojObject &pay
 BusClient::BusClient()
 : m_log("configurator"),
   m_dbClient(&m_service),
+  m_mediaDbClient(&m_service, MojDbServiceDefs::MediaServiceName),
   m_tempDbClient(&m_service, MojDbServiceDefs::TempServiceName),
   m_configuratorsCompleted(0),
   m_launchedAsService(false),
@@ -560,6 +563,9 @@ void BusClient::ScanDir(const MojString& _id, Configurator::RunType scanType, co
 		ConfiguratorPtr dbKindConfigurator(new DbKindConfigurator(id, configType, scanType, *this, m_dbClient, baseDir + DB_KIND_DIR));
 		m_configurators.push_back(dbKindConfigurator);
 
+        ConfiguratorPtr mediaDbKindConfigurator(new MediaDbKindConfigurator(id, configType, scanType, *this, m_mediaDbClient, baseDir + MEDIADB_KIND_DIR));
+        m_configurators.push_back(mediaDbKindConfigurator);
+
 		ConfiguratorPtr tempDbKindConfigurator(new TempDbKindConfigurator(id, configType, scanType, *this, m_tempDbClient, baseDir + TEMPDB_KIND_DIR));
 		m_configurators.push_back(tempDbKindConfigurator);
 
@@ -568,6 +574,9 @@ void BusClient::ScanDir(const MojString& _id, Configurator::RunType scanType, co
 	if (bitmask & DBPERMISSIONS) {
 		ConfiguratorPtr dbPermsConfigurator(new DbPermissionsConfigurator(id, configType, scanType, *this, m_dbClient, baseDir + DB_PERMISSIONS_DIR));
 		m_configurators.push_back(dbPermsConfigurator);
+
+        ConfiguratorPtr mediaDbPermsConfigurator(new MediaDbPermissionsConfigurator(id, configType, scanType, *this, m_mediaDbClient, baseDir + MEDIADB_PERMISSIONS_DIR));
+        m_configurators.push_back(mediaDbPermsConfigurator);
 
 		ConfiguratorPtr tempDbPermsConfigurator(new TempDbPermissionsConfigurator(id, configType, scanType, *this, m_tempDbClient, baseDir + TEMPDB_PERMISSIONS_DIR));
 		m_configurators.push_back(tempDbPermsConfigurator);

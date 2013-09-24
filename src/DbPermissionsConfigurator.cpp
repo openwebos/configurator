@@ -24,6 +24,7 @@ using namespace std;
 
 static const char *MOJODB_DB_BUS_ADDRESS = "com.palm.db";
 static const char *MOJODB_TEMPDB_BUS_ADDRESS = "com.palm.tempdb";
+static const char *MOJODB_MEDIADB_BUS_ADDRESS = "com.webos.mediadb";
 static const char *MOJODB_PUTPERMISSIONS_METHOD = "putPermissions";
 
 const char* DbPermissionsConfigurator::ConfiguratorName() const
@@ -82,7 +83,21 @@ MojErr DbPermissionsConfigurator::ProcessConfigRemoval(const string& filePath, M
 	return MojErrInProgress;
 }
 
+////////////////////////////////////////////////
+// mediaDB
+MediaDbPermissionsConfigurator::MediaDbPermissionsConfigurator(const std::string& id, ConfigType confType, RunType type, BusClient& busClient, MojDbClient& dbClient, string configDirectory)
+    : DbPermissionsConfigurator(id, confType, type, busClient, dbClient, configDirectory)
+{
+}
 
+const char* MediaDbPermissionsConfigurator::ServiceName() const
+{
+     return MOJODB_MEDIADB_BUS_ADDRESS;
+}
+
+
+////////////////////////////////////////////////
+// tempDB
 TempDbPermissionsConfigurator::TempDbPermissionsConfigurator(const std::string& id, ConfigType confType, RunType type, BusClient& busClient, MojDbClient& dbClient, string configDirectory)
 	: DbPermissionsConfigurator(id, confType, type, busClient, dbClient, configDirectory)
 {

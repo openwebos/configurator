@@ -321,9 +321,10 @@ bool Configurator::Run()
 	MojLogTrace(m_log);
 
 	if (!m_scanned) {
-		GetConfigFiles("", m_configDir);
+        bool folderFound = GetConfigFiles("", m_configDir);
 		if (m_configs.empty()) {
-			MojLogNotice(m_log, "No configurations found in %s", m_configDir.c_str());
+            if (folderFound) // Prevents double logging when folder is missing
+                MojLogNotice(m_log, "No configurations found in %s", m_configDir.c_str());
 			m_emptyConfigurator = true;
 		} else {
 			m_emptyConfigurator = false;
@@ -402,21 +403,23 @@ MojErr Configurator::ProcessConfigRemoval(const std::string &filePath, const std
 	return ProcessConfigRemoval(filePath, parsed);
 }
 
-void Configurator::GetConfigFiles(const string& parent, const string& directory)
+// returns whether folder exists or not
+bool Configurator::GetConfigFiles(const string& parent, const string& directory)
 {
 	MojLogTrace(m_log);
 
 	DIR* dp = NULL;
 	struct dirent* dirp = NULL;
 	struct stat stat_buf;
-	MojLogInfo(m_log, "Finding config files in '%s' under '%s'", directory.c_str(), parent.c_str());
 
 	if((dp  = opendir(directory.c_str())) == NULL) {
-		MojLogError(m_log, "Failed to open directory: %s", directory.c_str());
-		return;
+        MojLogWarning(m_log, "Failed to open directory: %s, under %s", directory.c_str(), parent.c_str());
+        return false;
 	}
 
-	while ((dirp = readdir(dp)) != NULL) {
+    MojLogNotice(m_log, "Reading config files in '%s' under '%s'", directory.c_str(), parent.c_str());
+
+    while ((dirp = readdir(dp)) != NULL) {
 		string filename = dirp->d_name;
 		if (filename != "." && filename != "..") {
 			string filePath = directory;
@@ -445,6 +448,7 @@ void Configurator::GetConfigFiles(const string& parent, const string& directory)
 		}
 	}
 	closedir(dp);
+    return true;
 }
 
 const string Configurator::ReadFile(const string& filePath)
@@ -466,7 +470,7 @@ const string Configurator::ReadFile(const string& filePath)
 	}
 
 	contents.assign((istreambuf_iterator<char>(file)),
-	                 istreambuf_iterator<char>());
+                     istreambuf_iterator<char>());
 
 	file.close();
 	return contents;

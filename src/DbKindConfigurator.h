@@ -40,6 +40,15 @@ private:
 	MojDbClient& m_dbClient;
 };
 
+class MediaDbKindConfigurator : public DbKindConfigurator
+{
+public:
+    MediaDbKindConfigurator(const std::string& id, ConfigType confType, RunType type, BusClient& busClient, MojDbClient& dbClient, std::string configDirectory);
+
+protected:
+    virtual const char* ServiceName() const;
+};
+
 class TempDbKindConfigurator : public DbKindConfigurator
 {
 public:
