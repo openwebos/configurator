@@ -89,7 +89,7 @@ public:
 					errorText = mojErrorText.data();
 
 					if (endsWith(errorText, nakOkSuffix)) {
-						MojLogInfo(Logger(), "caching negative response for %s", m_config.c_str());
+						MojLogDebug(Logger(), "caching negative response for %s", m_config.c_str());
 						bool found = false;
 						response.del("errorCode", found);
 						response.del("errorText", found);

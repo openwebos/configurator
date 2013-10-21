@@ -324,7 +324,7 @@ bool Configurator::Run()
         bool folderFound = GetConfigFiles("", m_configDir);
 		if (m_configs.empty()) {
             if (folderFound) // Prevents double logging when folder is missing
-                MojLogNotice(m_log, "No configurations found in %s", m_configDir.c_str());
+                MojLogDebug(m_log, "No configurations found in %s", m_configDir.c_str());
 			m_emptyConfigurator = true;
 		} else {
 			m_emptyConfigurator = false;
@@ -335,11 +335,11 @@ bool Configurator::Run()
 	if (m_configs.empty()) {
 		if (m_pendingConfigs.empty() && !m_completed) {
 			if (!m_emptyConfigurator) {
-				MojLogNotice(m_log, "%s :: No more configurations", ConfiguratorName());
+				MojLogDebug(m_log, "%s :: No more configurations", ConfiguratorName());
 			}
 			Complete();
 		} else {
-			MojLogNotice(m_log, "%s :: %d configurations pending, m_completed = %d", ConfiguratorName(), m_pendingConfigs.size(), m_completed);
+			MojLogDebug(m_log, "%s :: %d configurations pending, m_completed = %d", ConfiguratorName(), m_pendingConfigs.size(), m_completed);
 		}
 		// nothing to do - already sent out all the requests
 		// just waiting for responses from services
@@ -368,7 +368,7 @@ bool Configurator::Run()
 	if (err) {
 		if (MojErrInProgress == err) {
 			m_configureOk.push_back(config);
-			MojLogInfo(m_log, "Skipping config file: %s", filePath.c_str());
+			MojLogDebug(m_log, "Skipping config file: %s", filePath.c_str());
 		}
 		else
 		{
@@ -417,7 +417,7 @@ bool Configurator::GetConfigFiles(const string& parent, const string& directory)
         return false;
 	}
 
-    MojLogNotice(m_log, "Reading config files in '%s' under '%s'", directory.c_str(), parent.c_str());
+    MojLogDebug(m_log, "Reading config files in '%s' under '%s'", directory.c_str(), parent.c_str());
 
     while ((dirp = readdir(dp)) != NULL) {
 		string filename = dirp->d_name;

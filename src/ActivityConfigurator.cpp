@@ -60,7 +60,7 @@ public:
 			MojInt64 errorCode;
 			if (response.get("errorCode", errorCode)) {
 				if (errorCode == MojErrExists) {
-					MojLogInfo(Logger(), "caching ok negative response for %s", m_config.c_str());
+					MojLogDebug(Logger(), "caching ok negative response for %s", m_config.c_str());
 					bool found = false;
 					response.del("errorCode", found);
 					response.del("errorText", found);
@@ -102,7 +102,7 @@ ActivityConfigurator::ActivityConfigurator(const std::string& id, ConfigType con
 	if (err == 0) {
 		err = stat(FIRST_USE_PROFILE_FLAG, &buf);
 		if (err == 0) {
-			MojLogInfo(m_log, "Fist Use has completed, installing all "
+			MojLogDebug(m_log, "Fist Use has completed, installing all "
 				"Activities");
 			m_firstUseOnly = false;
 		}
