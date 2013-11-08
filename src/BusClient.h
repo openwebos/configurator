@@ -169,6 +169,8 @@ private:
 	bool m_shuttingDown;
 	PendingWorkCollection m_pending;
 	unsigned int m_timerTimeout;
+	bool m_wrongAplication;
+	bool m_wrongLocation;
 };
 
 DECLARE_OPERATORS_FOR_FLAGS(BusClient::ScanTypes)

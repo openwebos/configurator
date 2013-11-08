@@ -275,8 +275,9 @@ MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& pay
 		}
 
 		m_client.m_msg.reset(msg);
+		unsigned int counter = 0;
 
-		for (MojObject::ConstArrayIterator it = payload.arrayBegin(); it != payload.arrayEnd(); it++) {
+		for (MojObject::ConstArrayIterator it = payload.arrayBegin(); it != payload.arrayEnd(); it++,++counter) {
 			const MojObject& request = *it;
 			MojString locationStr;
 			MojString typeStr;
@@ -310,6 +311,33 @@ MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& pay
 			}
 
 			m_client.Scan(confmode, app, type, location);
+		}
+
+		if (counter == 0) {
+			MojObject buff;
+			MojString locationStr;
+			MojString app;
+
+			err = payload.getRequired("location", buff);
+				MojErrCheck(err);
+
+			err = buff.stringValue(locationStr);
+				MojErrCheck(err);
+
+			if (access(locationStr.data(), R_OK) != 0) {
+				m_client.m_wrongLocation=true;
+
+			} else {
+				err = payload.getRequired("id", buff);
+					MojErrCheck(err);
+				err = buff.stringValue(app);
+					MojErrCheck(err);
+				locationStr.append("/");
+				locationStr.append(app);
+				if (access(locationStr.data(), R_OK) != 0) {
+					m_client.m_wrongAplication = true;
+				}
+			}
 		}
 
 		m_client.RunNextConfigurator();
@@ -427,6 +455,8 @@ BusClient::BusClient()
   m_tempDbClient(&m_service, MojDbServiceDefs::TempServiceName),
   m_configuratorsCompleted(0),
   m_launchedAsService(false),
+  m_wrongAplication(false),
+  m_wrongLocation(false),
   m_shuttingDown(false),
 	m_timerTimeout(0)
 {
@@ -707,7 +737,20 @@ void BusClient::ScheduleShutdown()
 		const Configurator::ConfigCollection& ok = Configurator::ConfigureOk();
 		const Configurator::ConfigCollection& failed = Configurator::ConfigureFailure();
 
-		if (!failed.empty()) {
+		if (m_wrongLocation || m_wrongAplication) {
+			MojString response;
+			if (m_wrongLocation) {
+				response.appendFormat("Location doesn't exist");
+
+			} else {
+				response.appendFormat("Aplication doesn't exist");
+
+			}
+			m_wrongLocation = false;
+			m_wrongAplication = false;
+			m_msg->replyError(MojErrInternal, response.data());
+
+		} else if (!failed.empty()) {
 			MojString response;
 			response.appendFormat("Partial configuration - %zu ok, %zu failed", ok.size(), failed.size());
 			m_msg->replyError(MojErrInternal, response.data());
