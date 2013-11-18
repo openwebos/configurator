@@ -428,6 +428,7 @@ BusClient::BusClient()
   m_configuratorsCompleted(0),
   m_launchedAsService(false),
   m_shuttingDown(false),
+  m_wrongAplication(false),
 	m_timerTimeout(0)
 {
 }
@@ -529,8 +530,12 @@ std::string BusClient::appConfDir(const MojString& appId, PackageType type, Pack
 		confPath += SERVICES_DIR;
 		break;
 	}
+	confPath.append(appId.begin(), appId.end());
+	if (access(confPath.c_str(), R_OK) != 0) {
+		m_wrongAplication = true;
+	}
 
-	return confPath.append(appId.begin(), appId.end()) + CONF_SUBDIR;
+	return confPath + CONF_SUBDIR;
 }
 
 void BusClient::Run(ScanTypes bitmask)
@@ -707,7 +712,13 @@ void BusClient::ScheduleShutdown()
 		const Configurator::ConfigCollection& ok = Configurator::ConfigureOk();
 		const Configurator::ConfigCollection& failed = Configurator::ConfigureFailure();
 
-		if (!failed.empty()) {
+		if (m_wrongAplication) {
+			MojString response;
+			response.appendFormat("Aplication or service doesn't exist");
+			m_wrongAplication = false;
+			m_msg->replyError(MojErrInternal, response.data());
+
+		} else if (!failed.empty()) {
 			MojString response;
 			response.appendFormat("Partial configuration - %zu ok, %zu failed", ok.size(), failed.size());
 			m_msg->replyError(MojErrInternal, response.data());

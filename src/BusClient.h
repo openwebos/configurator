@@ -167,6 +167,7 @@ private:
 	bool						 m_launchedAsService;
 	MojRefCountedPtr<MojServiceMessage> m_msg;
 	bool m_shuttingDown;
+	bool m_wrongAplication;
 	PendingWorkCollection m_pending;
 	unsigned int m_timerTimeout;
 };
