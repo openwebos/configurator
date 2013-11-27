@@ -30,6 +30,7 @@
 #include "luna/MojLunaService.h"
 #include "Configurator.h"
 #include "Flags.h"
+#include "Log.h"
 #include <vector>
 
 class BusClient : public MojReactorApp<MojGmainReactor>
@@ -54,7 +55,6 @@ public:
 	virtual ~BusClient();
 
 	MojDbClient&						GetDbClient();
-	MojLogger&							GetLogger();
 	MojRefCountedPtr<MojServiceRequest>	CreateRequest();
 	MojRefCountedPtr<MojServiceRequest>	CreateRequest(const char *forgedAppId);
 	virtual MojErr						open();
@@ -81,7 +81,7 @@ private:
 	class BusMethods : public MojService::CategoryHandler
 	{
 	public:
-		BusMethods(BusClient& client, MojLogger& log);
+		BusMethods(BusClient& client);
 
 	private:
 		bool WorkEnqueued(Callback callback, MojServiceMessage *msg, MojObject& payload);
@@ -93,7 +93,6 @@ private:
 		MojErr Unconfigure(MojServiceMessage* msg, MojObject& payload);
 
 		BusClient& m_client;
-		MojLogger& m_log;
 	};
 
 	struct PendingWork {
@@ -156,13 +155,12 @@ private:
 
 	void ConfiguratorComplete(ConfiguratorCollection::iterator configurator);
 
-	MojLogger					 m_log;
 	MojLunaService				 m_service;
 	MojDbServiceClient			 m_dbClient;
 	MojDbServiceClient			 m_mediaDbClient;
     MojDbServiceClient           m_tempDbClient;
-	ConfiguratorCollection m_configurators;
-	size_t m_configuratorsCompleted;
+	ConfiguratorCollection       m_configurators;
+	size_t                       m_configuratorsCompleted;
 	MojRefCountedPtr<BusMethods> m_methods;
 	bool						 m_launchedAsService;
 	MojRefCountedPtr<MojServiceMessage> m_msg;

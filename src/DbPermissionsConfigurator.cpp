@@ -51,7 +51,7 @@ DbPermissionsConfigurator::~DbPermissionsConfigurator()
 
 MojErr DbPermissionsConfigurator::ProcessConfig(const string& filePath, MojObject& permissions)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	std::string owner;
 	MojObject perms;
@@ -72,7 +72,7 @@ MojErr DbPermissionsConfigurator::ProcessConfig(const string& filePath, MojObjec
 
 MojErr DbPermissionsConfigurator::ProcessConfigRemoval(const string& filePath, MojObject& params)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	// This is the fix for NOV-129951.
 	// This operation is a mojodb no-op since the permissions are removed when the associated

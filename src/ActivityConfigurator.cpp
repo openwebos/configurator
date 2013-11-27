@@ -60,17 +60,19 @@ public:
 			MojInt64 errorCode;
 			if (response.get("errorCode", errorCode)) {
 				if (errorCode == MojErrExists) {
-					MojLogDebug(Logger(), "caching ok negative response for %s", m_config.c_str());
+					LOG_DEBUG("caching ok negative response for %s", m_config.c_str());
 					bool found = false;
 					response.del("errorCode", found);
 					response.del("errorText", found);
 					err = response.putBool("returnValue", true);
 					MarkConfigured();
 				} else {
-					MojLogWarning(Logger(), "Unrecognized errorCode %d", (int)errorCode);
+					LOG_WARNING(MSGID_ACTIVITY_CONFIGURATOR_WARNING, 1,
+							PMLOGKS("errorCode", (int)errorCode),
+							"Unrecognized errorCode %d", (int)errorCode);
 				}
 			} else {
-				MojLogWarning(Logger(), "errorCode not provided in request failure");
+				LOG_WARNING(MSGID_ACTIVITY_CONFIGURATOR_WARNING, 0, "errorCode not provided in request failure");
 			}
 		}
 		return DelegateResponse(response, err);
@@ -102,8 +104,7 @@ ActivityConfigurator::ActivityConfigurator(const std::string& id, ConfigType con
 	if (err == 0) {
 		err = stat(FIRST_USE_PROFILE_FLAG, &buf);
 		if (err == 0) {
-			MojLogDebug(m_log, "Fist Use has completed, installing all "
-				"Activities");
+			LOG_DEBUG("Fist Use has completed, installing all Activities");
 			m_firstUseOnly = false;
 		}
 	}
@@ -120,7 +121,7 @@ ActivityConfigurator::~ActivityConfigurator()
 
 bool ActivityConfigurator::CanCacheConfiguratorStatus(const std::string&) const
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	return false;
 }
 
@@ -137,24 +138,24 @@ static bool StartsWith(const std::string& s1, const std::string& prefix)
 
 MojErr ActivityConfigurator::ProcessConfig(const string& filePath, MojObject& params)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	const std::string& creator = ParentId(filePath);
 
 	if (creator.empty()) {
-		MojLogError(m_log, "Service id for activity '%s' is empty - needs to be in an appropriate subdirectory or given as part of the service call", filePath.c_str());
+		LOG_ERROR(MSGID_ACTIVITY_CONFIGURATOR_ERROR, 0, "Service id for activity '%s' is empty - needs to be in an appropriate subdirectory or given as part of the service call", filePath.c_str());
 		return MojErrInvalidArg;
 	}
 
 	if (m_firstUseOnly) {
 		bool firstUseSafe;
 		if (!params.get(FIRST_USE_SAFE, firstUseSafe) || !firstUseSafe) {
-			MojLogDebug(m_log, "Running before first use but activity %s not marked as safe for configuration at this time", filePath.c_str());
+			LOG_DEBUG("Running before first use but activity %s not marked as safe for configuration at this time", filePath.c_str());
 			return MojErrInProgress;
 		}
 	}
 
-	MojLogDebug(m_log, "ActivityConfigurator creator for %s is %s\n", filePath.c_str(), creator.c_str());
+	LOG_DEBUG("ActivityConfigurator creator for %s is %s\n", filePath.c_str(), creator.c_str());
 
 	MojObject activity;
 	MojErr err;
@@ -207,7 +208,7 @@ MojErr ActivityConfigurator::ProcessConfig(const string& filePath, MojObject& pa
 
 MojErr ActivityConfigurator::ProcessConfigRemoval(const string& filePath, MojObject& params)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	MojErr err;
 
 	MojObject activity;
@@ -220,7 +221,7 @@ MojErr ActivityConfigurator::ProcessConfigRemoval(const string& filePath, MojObj
 	const std::string& creator = ParentId(filePath);
 
 	if (creator.empty()) {
-		MojLogError(m_log, "Service id for activity '%s' is empty - needs to be in an appropriate subdirectory or given as part of the service call", filePath.c_str());
+		LOG_ERROR(MSGID_ACTIVITY_CONFIGURATOR_ERROR, 0, "Service id for activity '%s' is empty - needs to be in an appropriate subdirectory or given as part of the service call", filePath.c_str());
 		return MojErrInvalidArg;
 	}
 

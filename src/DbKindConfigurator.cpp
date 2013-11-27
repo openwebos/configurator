@@ -79,7 +79,7 @@ MojErr DbKindConfigurator::CheckOwner(const std::string& filePath, MojObject &pa
 			// MojLogWarning(m_log, "Deprecated usage - owner should not be specified in %s (%s overridden to %s)", filePath.c_str(), owner.data(), ownerid.c_str());
 			// todo - return error once we disallow deprecated usage
 		} else {
-			MojLogDebug(m_log, "setting owner for %s (%s)", filePath.c_str(), ownerid.c_str());
+			LOG_DEBUG("setting owner for %s (%s)", filePath.c_str(), ownerid.c_str());
 		}
 		params.putString("owner", ownerid.c_str());
 	} else {
@@ -89,7 +89,9 @@ MojErr DbKindConfigurator::CheckOwner(const std::string& filePath, MojObject &pa
 		MojString owner;
 		err = params.getRequired("owner", owner);
 		if (err != MojErrNone) {
-			MojLogError(m_log, "Cannot determine owner of db kind for %s", filePath.c_str());
+			LOG_ERROR(MSGID_DB_KIND_CONFIG_ERROR, 1,
+					PMLOGKS("file", filePath.c_str()),
+					"Cannot determine owner of db kind for %s", filePath.c_str());
 			return MojErrInvalidSchema;
 		} else {
 			// Fix for DFISH-14510 turn off logging here
@@ -102,7 +104,7 @@ MojErr DbKindConfigurator::CheckOwner(const std::string& filePath, MojObject &pa
 
 MojErr DbKindConfigurator::ProcessConfig(const string& filePath, MojObject& params)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	MojErr err;
 	std::string owner;
 
@@ -114,7 +116,7 @@ MojErr DbKindConfigurator::ProcessConfig(const string& filePath, MojObject& para
 
 MojErr DbKindConfigurator::ProcessConfigRemoval(const string& filePath, MojObject& params)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	MojErr err;
 	MojString id;
 	MojObject delKind;

@@ -73,28 +73,32 @@ static inline bool startsWith(const char *str, const std::string& prefix)
 	return 0 == strncmp(str, prefix.c_str(), prefix.length());
 }
 
-BusClient::BusMethods::BusMethods(BusClient& client, MojLogger& log)
-: m_client(client), m_log(log)
+BusClient::BusMethods::BusMethods(BusClient& client)
+: m_client(client)
 {
+	LOG_TRACE("Entering function %s", __FUNCTION__);
+
 	MojErr err = addMethod("run", (Callback) &BusMethods::Run);
 	if (err)
-		MojLogCritical(m_log, "failed to register run method: %i", err);
+		LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 0, "failed to register run method: %i", err);
 
 	err = addMethod("scan", (Callback) &BusMethods::Scan);
 	if (err)
-		MojLogCritical(m_log, "failed to register scan method: %i", err);
+		LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 0, "failed to register scan method: %i", err);
 
 	err = addMethod("rescan", (Callback) &BusMethods::Rescan);
 	if (err)
-		MojLogCritical(m_log, "failed to register rescan method: %i", err);
+		LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 0, "failed to register rescan method: %i", err);
 
 	err = addMethod("unconfigure", (Callback) &BusMethods::Unconfigure);
 	if (err)
-		MojLogCritical(m_log, "failed to register unconfigure method: %i", err);
+		LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 0, "failed to register unconfigure method: %i", err);
 }
 
 static MojErr getTypes(MojObject typesArray, BusClient::ScanTypes &bitmask)
 {
+	LOG_TRACE("Entering function %s", __FUNCTION__);
+
 	MojObject::ConstArrayIterator it = typesArray.arrayBegin();
 	if (it == NULL)
 		MojErrThrowMsg(MojErrInvalidMsg, "'types' not an array");
@@ -149,7 +153,7 @@ None
 
 MojErr BusClient::BusMethods::Run(MojServiceMessage* msg, MojObject& payload)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	if (WorkEnqueued((Callback) &BusMethods::Run, msg, payload))
 		return MojErrNone;
@@ -179,6 +183,8 @@ MojErr BusClient::BusMethods::Run(MojServiceMessage* msg, MojObject& payload)
 
 bool BusClient::BusMethods::WorkEnqueued(Callback callback, MojServiceMessage *msg, MojObject &payload)
 {
+	LOG_TRACE("Entering function %s", __FUNCTION__);
+
 	if (m_client.m_msg.get() == NULL)
 		return false;
 
@@ -221,7 +227,7 @@ None
 
 MojErr BusClient::BusMethods::Rescan(MojServiceMessage* msg, MojObject& payload)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	if (WorkEnqueued((Callback) &BusMethods::Rescan, msg, payload))
 		return MojErrNone;
@@ -258,7 +264,7 @@ None
 
 MojErr BusClient::BusMethods::Scan(MojServiceMessage* msg, MojObject& payload)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	if (WorkEnqueued((Callback) &BusMethods::Scan, msg, payload))
 		return MojErrNone;
@@ -268,6 +274,8 @@ MojErr BusClient::BusMethods::Scan(MojServiceMessage* msg, MojObject& payload)
 
 MojErr BusClient::BusMethods::ScanRequest(MojServiceMessage* msg, MojObject& payload, ConfigurationMode confmode)
 {
+	LOG_TRACE("Entering function %s", __FUNCTION__);
+
 	try {
 		MojErr err;
 		if (payload.type() != MojObject::TypeArray) {
@@ -351,7 +359,7 @@ None
 
 MojErr BusClient::BusMethods::Unconfigure(MojServiceMessage *msg, MojObject &payload)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	if (WorkEnqueued((Callback) &BusMethods::Unconfigure, msg, payload))
 		return MojErrNone;
@@ -421,15 +429,14 @@ MojErr BusClient::BusMethods::Unconfigure(MojServiceMessage *msg, MojObject &pay
 }
 
 BusClient::BusClient()
-: m_log("configurator"),
-  m_dbClient(&m_service),
+: m_dbClient(&m_service),
   m_mediaDbClient(&m_service, MojDbServiceDefs::MediaServiceName),
   m_tempDbClient(&m_service, MojDbServiceDefs::TempServiceName),
   m_configuratorsCompleted(0),
   m_launchedAsService(false),
   m_shuttingDown(false),
   m_wrongAplication(false),
-	m_timerTimeout(0)
+  m_timerTimeout(0)
 {
 }
 
@@ -440,11 +447,6 @@ BusClient::~BusClient()
 MojDbClient& BusClient::GetDbClient()
 {
 	return m_dbClient;
-}
-
-MojLogger& BusClient::GetLogger()
-{
-	return m_log;
 }
 
 MojRefCountedPtr<MojServiceRequest> BusClient::CreateRequest()
@@ -463,7 +465,7 @@ MojRefCountedPtr<MojServiceRequest> BusClient::CreateRequest(const char *forgedA
 
 MojErr BusClient::open()
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	// set up luna-service
 
@@ -479,18 +481,18 @@ MojErr BusClient::open()
 	// If we're not launched as a service, then we're launching at boot,
 	// which means we should run all the configurators.
 	if (!m_launchedAsService) {
-		MojLogDebug(m_log, "Not run as dynamic service - run startup configurations");
+		LOG_DEBUG("Not run as dynamic service - run startup configurations");
 		Run(DBKINDS | DBPERMISSIONS | FILECACHE | ACTIVITIES);
 		RunNextConfigurator();
 	} else {
-		MojLogDebug(m_log, "launched as service");
+		LOG_DEBUG("launched as service");
 
-		m_methods.reset(new BusMethods(*this, m_log));
+		m_methods.reset(new BusMethods(*this));
 		MojAllocCheck(m_methods.get());
 
 		err = m_service.addCategory(MojLunaService::DefaultCategory, m_methods.get());
 	}
-	MojLogDebug(m_log, "bus client %p", this);
+	LOG_DEBUG("bus client %p", this);
 
 	return MojErrNone;
 }
@@ -508,7 +510,7 @@ MojErr BusClient::handleArgs(const StringVec& args)
 
 std::string BusClient::appConfDir(const MojString& appId, PackageType type, PackageLocation location)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	std::string confPath;
 
 	switch (location) {
@@ -549,7 +551,7 @@ void BusClient::ScanDir(const MojString& _id, Configurator::RunType scanType, co
 	const std::string id(_id.data(), _id.length());
 
 	if (m_shuttingDown) {
-		MojLogDebug(m_log, "Aborting shutdown - request received");
+		LOG_DEBUG("Aborting shutdown - request received");
 		assert(m_timerTimeout != 0);
 		g_source_remove(m_timerTimeout);
 		m_timerTimeout = 0;
@@ -560,7 +562,9 @@ void BusClient::ScanDir(const MojString& _id, Configurator::RunType scanType, co
 	if (bitmask & DBKINDS) {
 		if (types & DeprecatedDbKind) {
 			// deprecated
-			MojLogWarning(m_log, "Scanning deprecated mojodb config directory under %s", baseDir.c_str());
+			LOG_WARNING(MSGID_BUS_CLIENT_ERROR, 1,
+					PMLOGKS("directory", baseDir.c_str()),
+					"Scanning deprecated mojodb config directory under %s", baseDir.c_str());
 			ConfiguratorPtr oldDbKindConfigurator(new DbKindConfigurator(id, configType, scanType, *this, m_dbClient, baseDir + OLD_DB_KIND_DIR));
 			m_configurators.push_back(oldDbKindConfigurator);
 		}
@@ -600,8 +604,9 @@ void BusClient::ScanDir(const MojString& _id, Configurator::RunType scanType, co
 
 void BusClient::Scan(ConfigurationMode confmode, const MojString &appId, PackageType type, PackageLocation location)
 {
-	MojLogTrace(m_log);
-	MojLogDebug(m_log, "Scanning %s %d@%d", appId.data(), type, location);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
+
+	LOG_DEBUG("Scanning %s %d@%d", appId.data(), type, location);
 	std::string confPath = appConfDir(appId, type, location);
 	Configurator::RunType mode = Configurator::Configure;
 	switch (confmode) {
@@ -615,7 +620,7 @@ void BusClient::Scan(ConfigurationMode confmode, const MojString &appId, Package
 
 	ScanDir(appId, mode, confPath, DBKINDS | DBPERMISSIONS | FILECACHE | ACTIVITIES, PackageTypeToConfigType(type));
 
-	MojLogDebug(m_log, "Scan of %s finished", appId.data());
+	LOG_DEBUG("Scan of %s finished", appId.data());
 }
 
 void BusClient::Unconfigure(const MojString &appId, PackageType type, PackageLocation location, ScanTypes bitmask)
@@ -623,12 +628,12 @@ void BusClient::Unconfigure(const MojString &appId, PackageType type, PackageLoc
 	std::string confPath = appConfDir(appId, type, location);
 
 	ScanDir(appId, Configurator::RemoveConfiguration, confPath, bitmask, PackageTypeToConfigType(type));
-	MojLogDebug(m_log, "Removal of %s finished", appId.data());
+	LOG_DEBUG("Removal of %s finished", appId.data());
 }
 
 void BusClient::RunNextConfigurator()
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
 	// Schedule an event to run the next configurator once the stack is unwound.
 	g_idle_add(&BusClient::IterateConfiguratorsCallback, this);
@@ -636,12 +641,12 @@ void BusClient::RunNextConfigurator()
 
 gboolean BusClient::IterateConfiguratorsCallback(gpointer data)
 {
-	MojLogTrace(s_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	BusClient* client = static_cast<BusClient*>(data);
 
 	if (client->m_configuratorsCompleted == client->m_configurators.size()) {
 		if (!client->m_shuttingDown) {
-			MojLogDebug(client->m_log, "No more configurators left (%d configurations completed, %d configurations failed), shutting down.", Configurator::ConfigureOk().size(), Configurator::ConfigureFailure().size());
+			LOG_DEBUG("No more configurators left (%d configurations completed, %d configurations failed), shutting down.", Configurator::ConfigureOk().size(), Configurator::ConfigureFailure().size());
 			client->ScheduleShutdown();
 			return client->m_msg.get() != NULL;
 		}
@@ -661,9 +666,11 @@ gboolean BusClient::IterateConfiguratorsCallback(gpointer data)
 					configurationsRemaining = TRUE;
 				exceptionThrown = false;
 		} catch (const std::exception& e) {
-			MojLogCritical(s_log, "exception while running configurator: %s", e.what());
+			LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 1,
+					PMLOGKS("exception", e.what()),
+					"exception while running configurator: %s", e.what());
 		} catch (...) {
-			MojLogCritical(s_log, "uncaught exception while running configurator");
+			LOG_CRITICAL(MSGID_BUS_CLIENT_ERROR, 0, "uncaught exception while running configurator");
 		}
 
 		// If an exception was thrown, remove it from the queue and keep going
@@ -678,9 +685,9 @@ gboolean BusClient::IterateConfiguratorsCallback(gpointer data)
 
 void BusClient::ConfiguratorComplete(ConfiguratorCollection::iterator configurator)
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 
-	MojLogDebug(m_log, "... configurator %s complete (%p), %zd left.", (*configurator)->ConfiguratorName(), configurator->get(), m_configurators.size() - 1);
+	LOG_DEBUG("... configurator %s complete (%p), %zd left.", (*configurator)->ConfiguratorName(), configurator->get(), m_configurators.size() - 1);
 	configurator->reset();
 	m_configuratorsCompleted++;
 	RunNextConfigurator();
@@ -706,7 +713,7 @@ void BusClient::ConfiguratorComplete(int configuratorIndex)
 
 void BusClient::ScheduleShutdown()
 {
-	MojLogTrace(m_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	// Reply to the "run" message now that we're done
 	if (m_launchedAsService && m_msg.get()) {
 		const Configurator::ConfigCollection& ok = Configurator::ConfigureOk();
@@ -731,7 +738,7 @@ void BusClient::ScheduleShutdown()
 	}
 
 	if (!m_pending.empty()) {
-		MojLogDebug(m_log, "%d pending service calls to handle remaining", m_pending.size());
+		LOG_DEBUG("%d pending service calls to handle remaining", m_pending.size());
 
 		// still more pending work
 		m_configuratorsCompleted = 0;
@@ -745,7 +752,7 @@ void BusClient::ScheduleShutdown()
 		return;
 	}
 
-	MojLogDebug(m_log, "No more pending service calls to handle - scheduling shutdown");
+	LOG_DEBUG("No more pending service calls to handle - scheduling shutdown");
 
 	// Schedule an event to shutdown once the stack is unwound.
 	if (m_timerTimeout == 0) {
@@ -767,7 +774,7 @@ void BusClient::ScheduleShutdown()
 
 gboolean BusClient::ShutdownCallback(gpointer data)
 {
-	MojLogTrace(s_log);
+	LOG_TRACE("Entering function %s", __FUNCTION__);
 	BusClient* client = static_cast<BusClient*>(data);
 	client->m_timerTimeout = 0;
 	client->shutdown();

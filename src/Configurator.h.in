@@ -79,7 +79,6 @@ protected:
 
 	const std::string& ParentId(const std::string& filePath) const;
 
-	MojLogger& m_log;
 	BusClient& m_busClient;
 	const std::string m_id;
 	const ConfigType m_confType;
@@ -140,8 +139,6 @@ protected:
 	// useful if you want to specifically mark a config file as unconfigured
 	// this maintains default behaviour if there was no error
 	void UnmarkConfigured();
-
-	MojLogger& Logger();
 
 	// the path to the configuration that generated this configurator request
 	const std::string m_config;

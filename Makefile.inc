@@ -1,9 +1,10 @@
-LIBS := -llunaservice -lmojoluna -lmojodb -lmojocore $(LIBS)
+LIBS := -llunaservice -lmojoluna -lmojodb -lmojocore -lpmloglib $(LIBS)
 LOCAL_LDFLAGS := $(LDFLAGS) $(LIBS)
 
 GLIBCURL_SOURCES := glibcurl.c
 
 CONFIGURATOR_SOURCES := \
+        Log.cpp
 	ActivityConfigurator.cpp \
 	Configurator.cpp \
 	DbKindConfigurator.cpp \
