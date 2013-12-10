@@ -103,7 +103,7 @@ public:
 					}
 				} else {
 					LOG_WARNING(MSGID_FILE_CACHE_CONFIG_WARNING, 1,
-							PMLOGKS("error", (int)errorCode),
+							PMLOGKFV("error", "%d", (int)errorCode),
 							"Unrecognized errorCode %d", (int)errorCode);
 				}
 			} else {

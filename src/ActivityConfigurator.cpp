@@ -68,7 +68,7 @@ public:
 					MarkConfigured();
 				} else {
 					LOG_WARNING(MSGID_ACTIVITY_CONFIGURATOR_WARNING, 1,
-							PMLOGKS("errorCode", (int)errorCode),
+							PMLOGKFV("errorCode", "%d", (int)errorCode),
 							"Unrecognized errorCode %d", (int)errorCode);
 				}
 			} else {

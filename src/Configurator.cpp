@@ -522,7 +522,7 @@ MojErr Configurator::BusResponseAsync(const std::string& config, MojObject& resp
 			LOG_ERROR(MSGID_CONFIGURATOR_ERROR, 3,
 					PMLOGKS("config", config.c_str()),
 					PMLOGKS("json", json.data()),
-					PMLOGKS("error", err),
+					PMLOGKFV("error", "%d", err),
 					"%s: %s (MojErr: %i)", config.c_str(), json.data(), err);
 		} else {
 			m_configureOk.push_back(config);
