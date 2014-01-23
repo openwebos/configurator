@@ -721,18 +721,23 @@ void BusClient::ScheduleShutdown()
 
 		if (m_wrongAplication) {
 			MojString response;
-			response.appendFormat("Aplication or service doesn't exist");
+			response.appendFormat("Application or service doesn't exist");
 			m_wrongAplication = false;
-			m_msg->replyError(MojErrInternal, response.data());
-
+            if(m_msg->replyError(MojErrInternal, response.data()) != MojErrNone) {
+                LOG_WARNING(MSGID_SHUTDOWN_ERROR, 1, PMLOGKS("Response", response.data()), "Application or service doesn't exist");
+            }
 		} else if (!failed.empty()) {
 			MojString response;
 			response.appendFormat("Partial configuration - %zu ok, %zu failed", ok.size(), failed.size());
-			m_msg->replyError(MojErrInternal, response.data());
+            if(m_msg->replyError(MojErrInternal, response.data()) != MojErrNone) {
+                LOG_WARNING(MSGID_SHUTDOWN_ERROR, 1, PMLOGKS("Response", response.data()), "Partial configuration");
+            }
 		} else {
 			MojObject response;
 			response.putInt("configured", ok.size());
-			m_msg->replySuccess(response);
+            if(m_msg->replySuccess(response) != MojErrNone) {
+                LOG_WARNING(MSGID_SHUTDOWN_ERROR, 0, "Configured");
+            }
 		}
 		m_msg.reset();
 	}

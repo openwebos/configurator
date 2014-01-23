@@ -57,7 +57,8 @@ MojErr DbPermissionsConfigurator::ProcessConfig(const string& filePath, MojObjec
 	MojObject perms;
 
 	owner = ParentId(filePath);
-	perms.put("permissions", permissions);
+    MojErr err = perms.put("permissions", permissions);
+    MojErrCheck(err);
 
 	// for third-party packages, we set the appid on the service request
 	// so that mojodb does things correctly.  root config files aren't split up

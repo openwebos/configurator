@@ -38,6 +38,7 @@ PMLOG_TRACE(__VA_ARGS__);
 #define MSGID_DB_KIND_CONFIG_ERROR          "DB_KIND_CONFIG_ERROR"
 #define MSGID_CONFIGURATOR_WARNING          "CONFIGURATOR_WARNING"
 #define MSGID_CONFIGURATOR_ERROR            "CONFIGURATOR_ERROR"
+#define MSGID_SHUTDOWN_ERROR                "SHUTDOWN_ERROR"
 
 extern PmLogContext getactivitymanagercontext();
 
