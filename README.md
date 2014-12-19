@@ -13,7 +13,7 @@ Dependencies
 ============
 Below are the tools and libraries required to build.
 
-	- openwebos/cjson 1.8.0
+	- json-c 0.11
 	- cmake 2.8.7 
 	- glib-2.0
 	- openwebos/Db8 libraries (libmojocore, libmojoluna)

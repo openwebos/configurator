@@ -40,9 +40,9 @@ pkg_check_modules(LUNASERVICE REQUIRED luna-service2)
 include_directories(${LUNASERVICE_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${LUNASERVICE_CFLAGS})
 
-pkg_check_modules(CJSON cjson)
-include_directories(${CJSON_INCLUDE_DIRS})
-webos_add_compiler_flags(ALL ${CJSON_CFLAGS})
+pkg_check_modules(JSON json-c)
+include_directories(${JSON_INCLUDE_DIRS})
+webos_add_compiler_flags(ALL ${JSON_CFLAGS})
 
 pkg_check_modules(DB8 REQUIRED db8>=3)
 include_directories(${DB8_INCLUDE_DIRS})
@@ -65,7 +65,7 @@ target_link_libraries(configurator
                     ${DB8_LDFLAGS}
                    	${GLIB2_LDFLAGS}
                    	${LUNASERVICE_LDFLAGS}
-                   	${CJSON_LDFLAGS}
+                   	${JSON_LDFLAGS}
                         ${PTHREAD}
                     ${PMLOG_LDFLAGS}
                    )
